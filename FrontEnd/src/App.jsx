@@ -15,8 +15,15 @@ const App = () => {
   const location = useLocation();
   const pathname = location.pathname;
 
-  const loggedInUser = JSON.parse(localStorage.getItem('user')) || {};
-  const isLoggedIn = Boolean(loggedInUser.email); 
+  let loggedInUser = {};
+  try {
+    const userFromStorage = localStorage.getItem('user');
+    loggedInUser = userFromStorage ? JSON.parse(userFromStorage) : {};
+  } catch (error) {
+    console.error('Error parsing user data from localStorage:', error);
+  }
+
+  const isLoggedIn = loggedInUser.email !== undefined; // Check if email exists
 
   console.log('User:', loggedInUser);
   console.log('Is logged in:', isLoggedIn);
@@ -32,10 +39,13 @@ const App = () => {
           hideProgressBar={true}
           newestOnTop={false}
           closeOnClick
-          rtl={false} />
+          rtl={false}
+        />
       </div>
 
+      {/* Conditionally render Sidebar */}
       {!hideSidebar && <Sidebar user={loggedInUser} />}
+      
       <div className='flex size-full flex-col'>
         <div className="root-layout">
           <img src="/icons/logo.svg" alt="logo" />
@@ -43,11 +53,15 @@ const App = () => {
             <MobileNav user={loggedInUser} />
           </div>
         </div>
+        
         <Routes>
-          <Route path='/' element={isLoggedIn ? <Home /> : <Navigate to='/sign-in' />} />
-          <Route path='/my-banks' element={isLoggedIn ? <Banks /> : <Navigate to='/sign-in' />} />
-          <Route path='/transaction-history' element={isLoggedIn ? <Transaction /> : <Navigate to='/sign-in' />} />
-          <Route path="/payment-transfer" element={isLoggedIn ? <Transfer /> : <Navigate to='/sign-in' />} />
+          {/* Protected routes, redirect to sign-in if not logged in */}
+          <Route path='/' element={loggedInUser.email ? <Home /> : <Navigate to='/sign-in' />} />
+          <Route path='/my-banks' element={loggedInUser.email ? <Banks /> : <Navigate to='/sign-in' />} />
+          <Route path='/transaction-history' element={loggedInUser.email ? <Transaction /> : <Navigate to='/sign-in' />} />
+          <Route path="/payment-transfer" element={loggedInUser.email ? <Transfer /> : <Navigate to='/sign-in' />} />
+          
+          {/* Public routes */}
           <Route path='/sign-in' element={<SignIn />} />
           <Route path='/sign-up' element={<SignUp />} />
         </Routes>

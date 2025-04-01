@@ -52,13 +52,14 @@ const AuthForm = ({ type }) => {
                 password: data.password,
             });
 
-            if (response.data.token) {
+            if (response.data.token || response.data.user) {
                 await localStore(response.data.user)
                 localStorage.setItem('token', response.data.token);
 
 
                 Cookies.set("token", response.data.token, {expires: 1})
                 Cookies.set('user', JSON.stringify(response.data.user))
+                console.log(response.data.user)
 
                 setUser(response.data.user);
                 navigate('/');
@@ -145,7 +146,7 @@ const AuthForm = ({ type }) => {
             </header>
             {user ? (
                 <div className='flex flex-col gap-4'>
-                    {/* Additional content for linked accounts */}
+                  
                 </div>
             ) : (
                 <Form {...form}>

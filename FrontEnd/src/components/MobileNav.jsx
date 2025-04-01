@@ -12,7 +12,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { sidebarLinks } from '@/constant'
 import cn from 'classnames'
 import Footer from './Footer'
-const MobileNav = ({user}) => {
+const MobileNav = ({ user }) => {
     const location = useLocation()
     const pathanme = location.pathname
     return (
